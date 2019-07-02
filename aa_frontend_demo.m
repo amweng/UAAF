@@ -146,9 +146,8 @@ end
 
 
 % -------------------------------------------------------------------
-% Function toolbox
+% Function toolbox --------------------------------------------------
 % -------------------------------------------------------------------
-
 
 %-----------------------------------------------------------------------------------------------------------------------------------
 % function to specify task units if different than default
@@ -215,7 +214,6 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 function defineContrasts(fid)
 
-
         fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [1,0,0], ''faces'',''T'');\n');
         fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [0,1,0], ''objects'',''T'');\n');
         fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [0,0,1], ''places'',''T'');\n');
@@ -233,7 +231,6 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 function FSLhack(fid)
 
-   
         fprintf(fid,'FSL_binaryDirectory = ''/usr/local/fsl/bin'';\n');
         fprintf(fid,'currentPath = getenv(''PATH'');\n');
         fprintf(fid,'if ~contains(currentPath,FSL_binaryDirectory)\n');
@@ -252,12 +249,9 @@ function inputParams(fid,dataset_name)
                 fprintf(fid,'aap.options.autoidentifystructural_chooselast = 0;\n\n');
                 fprintf(fid,'aap.options.NIFTI4D = 1;\n');
                 fprintf(fid,'aap.acq_details.numdummies = 0;\n');
-                fprintf(fid,'aap.acq_details.intput.correctEVfordummies = 0;\n\n');
-                
+                fprintf(fid,'aap.acq_details.intput.correctEVfordummies = 0;\n\n');         
         end
 end
-
-
 
 %-----------------------------------------------------------------------------------------------------------------------------------
 % cleanup_and_exit 
