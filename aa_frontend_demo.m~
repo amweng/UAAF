@@ -70,6 +70,9 @@ function generate_tasklist(fid, tree)
             case 'aamod_smooth'
                    fprintf(fid,'\t<module><name>%s</name>\n', module_name);
                    smooth_FWHM(fid,tree);
+            case 'aamod_norm_write'
+                   fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
+                   norm_write_warning(fid,tree);
             otherwise
                    fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
         end
@@ -109,11 +112,11 @@ function task_units(fid,tree)
      fprintf(fid,'\t\t\t\t<samp>%s</samp>\n',sampling_interval);
      fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
      fprintf(fid,'\t\t</extraparameters>\n');
-     fprintf(fid,'\t</module>\n');
+     fprintf(fid,'\t</module>\n\n\n');
 end
 
-function norm_write_warning
-    fprintf(fid,'\t
+function norm_write_warning(fid,tree)
+    fprintf(fid,'\n\n\t<!-- you may need to change domain=''*'' to domain=''session'' in aamod_norm_write.xml! -->\n\n');
 end
 
 
@@ -136,7 +139,7 @@ function smooth_FWHM(fid,tree)
      fprintf(fid,'\t\t\t\t<FWHM>%s</FWHM>\n',smooth_kernel);
      fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
      fprintf(fid,'\t\t</extraparameters>\n');
-     fprintf(fid,'\t</module>\n');
+     fprintf(fid,'\t</module>\n\n\n');
 end
 
 
@@ -153,6 +156,8 @@ function generate_userscript(fid, tree)
     fprintf(fid,'%s\n','clear functions;');
     fprintf(fid,'%s\n','cd(''~'');');
     fprintf(fid,'%s\n\n','aa_ver5;');
+    
+    
    
     tasklist_fieldnames = fieldnames(tree.tasklist.settings);
     
@@ -197,6 +202,21 @@ function generate_userscript(fid, tree)
     fprintf(fid,'%s\n','aa_close(aap);');
     
 end
+
+function FSLhack(fid,tree)
+
+        sprintf(fid,'% -----------------------------------------------------------\n');
+        sprintf(fid,'% FSL hack\n');
+        sprintf(fid,'% -----------------------------------------------------------\n');
+        sprintf(fid,'FSL_binaryDirectory = ''/usr/local/fsl/bin'';\n');
+        sprintf(fid,'currentPath = getenv(''PATH'');\n');
+        sprintf(fid,'if ~contains(currentPath,FSL_binaryDirectory)\n');
+        sprintf(fid,'\tcorrectedPath = [ currentPath '':'' FSL_binaryDirectory ];\n');
+        sprintf(fid,'\tsetenv = (''PATH'', correctedPath);\n');
+        sprintf(fid,'end\n');
+
+end
+
 
 
 %-----------------------------------------------------------------------------------------------------------------------------------

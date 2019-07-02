@@ -156,12 +156,18 @@ function generate_userscript(fid, tree)
     fprintf(fid,'%s\n','clear functions;');
     fprintf(fid,'%s\n','cd(''~'');');
     fprintf(fid,'%s\n\n','aa_ver5;');
+    
+    fprintf(fid,'\n\n');
+    FSLhack(fid);
+    
+    
    
     tasklist_fieldnames = fieldnames(tree.tasklist.settings);
     
     for index = 1:numel(tasklist_fieldnames)
         
         thisfieldname = tasklist_fieldnames{index};
+       
     
         switch (thisfieldname)
 
@@ -200,6 +206,19 @@ function generate_userscript(fid, tree)
     fprintf(fid,'%s\n','aa_close(aap);');
     
 end
+
+function FSLhack(fid)
+
+   
+        fprintf(fid,'FSL_binaryDirectory = ''/usr/local/fsl/bin'';\n');
+        fprintf(fid,'currentPath = getenv(''PATH'');\n');
+        fprintf(fid,'if ~contains(currentPath,FSL_binaryDirectory)\n');
+        fprintf(fid,'\tcorrectedPath = [ currentPath '':'' FSL_binaryDirectory ];\n');
+        fprintf(fid,'\tsetenv = (''PATH'', correctedPath);\n');
+        fprintf(fid,'end\n\n\n');
+
+end
+
 
 
 %-----------------------------------------------------------------------------------------------------------------------------------
