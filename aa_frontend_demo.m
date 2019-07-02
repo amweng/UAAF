@@ -146,8 +146,8 @@ end
 function generate_userscript(fid, tree)
 
     fprintf(fid,'%s\n','clear all;');
-    fprintf(fid,'%s\n','clear functions;');
-    fprintf(fid,'%s\n','cd(''~'');');
+  %  fprintf(fid,'%s\n','clear functions;');
+   % fprintf(fid,'%s\n','cd(''~'');');
     fprintf(fid,'%s\n\n','aa_ver5;');
     
     fprintf(fid,'\n\n');
@@ -221,7 +221,7 @@ end
 
 %placeholder for subject specification
 function processBIDS(fid) 
-      fprintf(fid,'aap = aas_processBIDS(aap, [], [], {''sub-01'', ''sub-02'', ''sub-03'', ''sub-04'', ''sub-05'', ''sub-06'', ''sub-07'', ''sub-08'', ''sub-09''});');
+      fprintf(fid,'aap = aas_processBIDS(aap, [], [], {''sub-01'', ''sub-02'', ''sub-03'', ''sub-04'', ''sub-05''});');
 end
 
 %FSL directory specification workaround

@@ -4,7 +4,7 @@
         
          <settings>  
              <!--Read and Write paths-->
-            <default_parameters>/Users/andrewweng/Repositories/automaticanalysis_andrew/aa_parametersets/aap_parameters_ANDREW.xml</default_parameters>       <!-- US -->
+            <default_parameters>aap_parameters_ANDREW.xml</default_parameters>       <!-- US -->
             <root>/Users/andrewweng/Data/ds001497</root>                                      <!-- US -->        
             <data_directory>/Users/andrewweng/Data/ds001497</data_directory>                  <!-- US -->
             <result_directory>RESULTS</result_directory>                                  <!-- US -->

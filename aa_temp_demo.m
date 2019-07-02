@@ -1,6 +1,4 @@
 clear all;
-clear functions;
-cd('~');
 aa_ver5;
 
 
@@ -13,7 +11,7 @@ if ~contains(currentPath,FSL_binaryDirectory)
 end
 
 
-aap = aarecipe('/Users/andrewweng/Repositories/automaticanalysis_andrew/aa_parametersets/aap_parameters_ANDREW.xml','aa_temp_demo.m');
+aap = aarecipe('aap_parameters_ANDREW.xml','aa_temp_demo.xml');
 aap.acq_details.root = '/Users/andrewweng/Data/ds001497';
 aap.directory_conventions.rawdatadir = '/Users/andrewweng/Data/ds001497';
 aap.directory_conventions.analysisid = 'RESULTS';
@@ -26,7 +24,7 @@ aap.options.NIFTI4D = 1;
 aap.acq_details.numdummies = 0;
 aap.acq_details.intput.correctEVfordummies = 0;
 
-aap = aas_processBIDS(aap, [], [], {'sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-06', 'sub-07', 'sub-08', 'sub-09'});
+aap = aas_processBIDS(aap, [], [], {'sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05'});
 
 aap.tasksettings.aamod_firstlevel_model.xBF.UNITS = 'secs';
 
