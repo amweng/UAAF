@@ -20,12 +20,9 @@ generate_tasklist(fid,tree);
 fclose(fid);
 
 % if (do_preflight); preflight_scripts; end
-
 %
 % run "aa_temp" here...
-%
 % aa_temp
-
 % delete aa_temp.m and aa_temp.xml on exit
 
 cleanup_and_exit(0);
@@ -78,17 +75,84 @@ function generate_tasklist(fid, tree)
     
     
     fprintf(fid,'%s\n\n','</main>');
-
     fprintf(fid,'%s\n','</tasklist>');
     fprintf(fid,'%s\n','</aap>');
     
 end
 
+%-----------------------------------------------------------------------------------------------------------------------------------
+% generate_userscript 
+%-----------------------------------------------------------------------------------------------------------------------------------
+
+function generate_userscript(fid, tree)
+
+    fprintf(fid,'%s\n','clear all;');
+  %  fprintf(fid,'%s\n','clear functions;');
+   % fprintf(fid,'%s\n','cd(''~'');');
+    fprintf(fid,'%s\n\n','aa_ver5;');
+    
+    fprintf(fid,'\n\n');
+    FSLhack(fid);
+    
+
+    tasklist_fieldnames = fieldnames(tree.tasklist.settings);
+    
+    for index = 1:numel(tasklist_fieldnames)
+        thisfieldname = tasklist_fieldnames{index};
+       
+    
+        switch (thisfieldname)
+
+            case 'default_parameters'
+                parameters_fname = getfield(tree.tasklist.settings, 'default_parameters');
+                tasklist_fname = 'aa_temp_demo.xml';
+                fprintf(fid,'aap = aarecipe(''%s'',''%s'');\n', parameters_fname, tasklist_fname);
+
+            case 'root'
+                root_directory = getfield(tree.tasklist.settings, 'root');
+                fprintf(fid,'aap.acq_details.root = ''%s'';\n', root_directory);
+            
+            case 'result_directory'
+                result_directory = getfield(tree.tasklist.settings, 'result_directory');
+                fprintf(fid,'aap.directory_conventions.analysisid = ''%s'';\n', result_directory);
+                      
+            case 'data_directory'
+                data_directory = getfield(tree.tasklist.settings, 'data_directory');
+                fprintf(fid,'aap.directory_conventions.rawdatadir = ''%s'';\n', data_directory);  
+            
+            case 'identify_options'
+                identify_dataset = getfield(tree.tasklist.settings, 'identify_options');
+                inputParams(fid,identify_dataset);
+                
+            case 'task_units'
+                task_units = getfield(tree.tasklist.settings, 'task_units');      
+        end
+    end
+    
+    
+    % TODO, subject selection
+    processBIDS(fid);
+    fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
+   
+    %modeling
+    defineContrasts(fid);
+    
+    fprintf(fid,'\n%s\n','aa_doprocessing(aap);');
+%     if (do_report); fprintf(fid,'%s\n','aa_report(fullfile(aas_getstudypath(aap),aap.directory_conventions.analysisid));'); end
+    fprintf(fid,'%s\n','aa_close(aap);');
+    
+end
+
+
+
+% -------------------------------------------------------------------
+% Function toolbox
+% -------------------------------------------------------------------
+
 
 %-----------------------------------------------------------------------------------------------------------------------------------
-% check for and handle preprocessing options
+% function to specify task units if different than default
 %-----------------------------------------------------------------------------------------------------------------------------------
-
 
 function task_units(fid,tree)
 
@@ -96,9 +160,8 @@ function task_units(fid,tree)
       sampling_interval = 0;
     
       for index = 1:numel(tasklist_fieldnames)
-        
-        
         thisfieldname = tasklist_fieldnames{index};
+        
         switch(thisfieldname)
             case 'segment_samp'
                 sampling_interval = num2str(getfield(tree.tasklist.settings, 'segment_samp'));
@@ -117,6 +180,9 @@ function norm_write_warning(fid,tree)
     fprintf(fid,'\n\n\t<!-- you may need to change domain=''*'' to domain=''session'' in aamod_norm_write.xml! -->\n\n');
 end
 
+%-----------------------------------------------------------------------------------------------------------------------------------
+% function to specify extra smoothing options
+%-----------------------------------------------------------------------------------------------------------------------------------
 
 function smooth_FWHM(fid,tree)
           tasklist_fieldnames = fieldnames(tree.tasklist.settings);
@@ -141,125 +207,27 @@ function smooth_FWHM(fid,tree)
 end
 
 
-
-
-
 %-----------------------------------------------------------------------------------------------------------------------------------
-% generate_userscript 
+%placeholder while i figure out .txt(or other) specification for contrasts and modeling
 %-----------------------------------------------------------------------------------------------------------------------------------
+function defineContrasts(fid)
 
-function generate_userscript(fid, tree)
 
-    fprintf(fid,'%s\n','clear all;');
-    fprintf(fid,'%s\n','clear functions;');
-    fprintf(fid,'%s\n','cd(''~'');');
-    fprintf(fid,'%s\n\n','aa_ver5;');
-    
-    fprintf(fid,'\n\n');
-    FSLhack(fid);
-    
-    % task_units default to 'scans'
-    task_units = 'scans';
-    tasklist_fieldnames = fieldnames(tree.tasklist.settings);
-    
-    for index = 1:numel(tasklist_fieldnames)
-        thisfieldname = tasklist_fieldnames{index};
-       
-    
-        switch (thisfieldname)
-
-            case 'default_parameters'
-                parameters_fname = getfield(tree.tasklist.settings, 'default_parameters');
-                tasklist_fname = 'aa_temp_demo.m';
-                fprintf(fid,'aap = aarecipe(''%s'',''%s'');\n', parameters_fname, tasklist_fname);
-
-            case 'root'
-                root_directory = getfield(tree.tasklist.settings, 'root');
-                fprintf(fid,'aap.acq_details.root = ''%s'';\n', root_directory);
-            
-            case 'result_directory'
-                result_directory = getfield(tree.tasklist.settings, 'result_directory');
-                fprintf(fid,'aap.directory_conventions.analysisid = ''%s'';\n', result_directory);
-                      
-            case 'data_directory'
-                data_directory = getfield(tree.tasklist.settings, 'data_directory');
-                fprintf(fid,'aap.directory_conventions.rawdatadir = ''%s'';\n', data_directory);  
-            
-            case 'identify_options'
-                identify_dataset = getfield(tree.tasklist.settings, 'identify_options');
-                inputParams(fid,identify_dataset);
-                
-            case 'task_units'
-                task_units = getfield(tree.tasklist.settings, 'task_units');
-            
-           
-        end
-    
-    end
-    
-    
-    % TODO, subject selection
-    processBIDS(fid);
-    
-    fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
-   
-    %modeling
-    for index = 1:numel(tree.tasklist.main.module)
-        module_name = tree.tasklist.main.module(index).name;
-        switch(module_name)
-            case 'aamod_segment8_multichan'
-                   fprintf(fid,'\t<module><name>%s</name>\n', module_name);
-                   task_units(fid,tree);
-            case 'aamod_smooth'
-                   fprintf(fid,'\t<module><name>%s</name>\n', module_name);
-                   smooth_FWHM(fid,tree);
-            case 'aamod_norm_write'
-                   fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
-                   norm_write_warning(fid,tree);
-            otherwise
-                   fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
-        end
-    end
-    
-    
-    fprintf(fid,'\n%s\n','aa_doprocessing(aap);');
-%     if (do_report); fprintf(fid,'%s\n','aa_report(fullfile(aas_getstudypath(aap),aap.directory_conventions.analysisid));'); end
-    fprintf(fid,'%s\n','aa_close(aap);');
-    
+        fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [1,0,0], ''faces'',''T'');\n');
+        fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [0,1,0], ''objects'',''T'');\n');
+        fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [0,0,1], ''places'',''T'');\n');
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-% -------------------------------------------------------------------
-% Function toolbox
-% -------------------------------------------------------------------
-
-function defineContrasts(fid,tree)
-
-        fprintf(fid,'aap = 'aamod-firstle
-
- 
-
-end
-
-
-
-
+%-----------------------------------------------------------------------------------------------------------------------------------
+%placeholder for subject specification
+%-----------------------------------------------------------------------------------------------------------------------------------
 function processBIDS(fid) 
-      fprintf(fid,'aap = aas_processBIDS(aap, [], [], {''sub-01'', ''sub-02'', ''sub-03'', ''sub-04'', ''sub-05'') ''sub-06'', ''sub-07'', ''sub-08'', ''sub-09''});');
+      fprintf(fid,'aap = aas_processBIDS(aap, [], [], {''sub-01'', ''sub-02'', ''sub-03'', ''sub-04'', ''sub-05''});');
 end
 
-
+%-----------------------------------------------------------------------------------------------------------------------------------
+%FSL directory specification workaround
+%-----------------------------------------------------------------------------------------------------------------------------------
 function FSLhack(fid)
 
    
@@ -271,7 +239,9 @@ function FSLhack(fid)
         fprintf(fid,'end\n\n\n');
 
 end
-
+%-----------------------------------------------------------------------------------------------------------------------------------
+%input parameters for specific datasets
+%-----------------------------------------------------------------------------------------------------------------------------------
 function inputParams(fid,dataset_name)
         switch(dataset_name)
             case('ds001497')

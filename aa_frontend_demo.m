@@ -80,65 +80,6 @@ function generate_tasklist(fid, tree)
     
 end
 
-
-%-----------------------------------------------------------------------------------------------------------------------------------
-% check for and handle preprocessing options
-%-----------------------------------------------------------------------------------------------------------------------------------
-
-
-function task_units(fid,tree)
-
-      tasklist_fieldnames = fieldnames(tree.tasklist.settings);
-      sampling_interval = 0;
-    
-      for index = 1:numel(tasklist_fieldnames)
-        thisfieldname = tasklist_fieldnames{index};
-        
-        switch(thisfieldname)
-            case 'segment_samp'
-                sampling_interval = num2str(getfield(tree.tasklist.settings, 'segment_samp'));
-        end
-      end
-
-     fprintf(fid,'\t\t<extraparameters>\n');
-     fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
-     fprintf(fid,'\t\t\t\t<samp>%s</samp>\n',sampling_interval);
-     fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
-     fprintf(fid,'\t\t</extraparameters>\n');
-     fprintf(fid,'\t</module>\n\n\n');
-end
-
-function norm_write_warning(fid,tree)
-    fprintf(fid,'\n\n\t<!-- you may need to change domain=''*'' to domain=''session'' in aamod_norm_write.xml! -->\n\n');
-end
-
-
-function smooth_FWHM(fid,tree)
-          tasklist_fieldnames = fieldnames(tree.tasklist.settings);
-      smooth_kernel = 0;
-    
-      for index = 1:numel(tasklist_fieldnames)
-        
-        
-        thisfieldname = tasklist_fieldnames{index};
-        switch(thisfieldname)
-            case 'smooth_FWHM'
-                smooth_kernel = num2str(getfield(tree.tasklist.settings, 'smooth_FWHM'));
-        end
-      end
- 
-     fprintf(fid,'\t\t<extraparameters>\n');
-     fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
-     fprintf(fid,'\t\t\t\t<FWHM>%s</FWHM>\n',smooth_kernel);
-     fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
-     fprintf(fid,'\t\t</extraparameters>\n');
-     fprintf(fid,'\t</module>\n\n\n');
-end
-
-
-
-
-
 %-----------------------------------------------------------------------------------------------------------------------------------
 % generate_userscript 
 %-----------------------------------------------------------------------------------------------------------------------------------
@@ -153,8 +94,7 @@ function generate_userscript(fid, tree)
     fprintf(fid,'\n\n');
     FSLhack(fid);
     
-    % task_units default to 'scans'
-    task_units = 'scans';
+
     tasklist_fieldnames = fieldnames(tree.tasklist.settings);
     
     for index = 1:numel(tasklist_fieldnames)
@@ -209,22 +149,88 @@ end
 % Function toolbox
 % -------------------------------------------------------------------
 
-%placeholder while i figure out .txt(or other) specification for contrasts
-%and modeling
+
+%-----------------------------------------------------------------------------------------------------------------------------------
+% function to specify task units if different than default
+%-----------------------------------------------------------------------------------------------------------------------------------
+
+function task_units(fid,tree)
+
+       % task_units default to 'scans'
+         task_units = 'scans';
+
+      tasklist_fieldnames = fieldnames(tree.tasklist.settings);
+      sampling_interval = 0;
+    
+      for index = 1:numel(tasklist_fieldnames)
+        thisfieldname = tasklist_fieldnames{index};
+        
+        switch(thisfieldname)
+            case 'segment_samp'
+                sampling_interval = num2str(getfield(tree.tasklist.settings, 'segment_samp'));
+        end
+      end
+
+     fprintf(fid,'\t\t<extraparameters>\n');
+     fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
+     fprintf(fid,'\t\t\t\t<samp>%s</samp>\n',sampling_interval);
+     fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
+     fprintf(fid,'\t\t</extraparameters>\n');
+     fprintf(fid,'\t</module>\n\n\n');
+end
+
+function norm_write_warning(fid,tree)
+    fprintf(fid,'\n\n\t<!-- you may need to change domain=''*'' to domain=''session'' in aamod_norm_write.xml! -->\n\n');
+end
+
+%-----------------------------------------------------------------------------------------------------------------------------------
+% function to specify extra smoothing options
+%-----------------------------------------------------------------------------------------------------------------------------------
+
+function smooth_FWHM(fid,tree)
+          tasklist_fieldnames = fieldnames(tree.tasklist.settings);
+      smooth_kernel = 0;
+    
+      for index = 1:numel(tasklist_fieldnames)
+        
+        
+        thisfieldname = tasklist_fieldnames{index};
+        switch(thisfieldname)
+            case 'smooth_FWHM'
+                smooth_kernel = num2str(getfield(tree.tasklist.settings, 'smooth_FWHM'));
+        end
+      end
+ 
+     fprintf(fid,'\t\t<extraparameters>\n');
+     fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
+     fprintf(fid,'\t\t\t\t<FWHM>%s</FWHM>\n',smooth_kernel);
+     fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
+     fprintf(fid,'\t\t</extraparameters>\n');
+     fprintf(fid,'\t</module>\n\n\n');
+end
+
+
+%-----------------------------------------------------------------------------------------------------------------------------------
+%placeholder while i figure out .txt(or other) specification for contrasts and modeling
+%-----------------------------------------------------------------------------------------------------------------------------------
 function defineContrasts(fid)
+
 
         fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [1,0,0], ''faces'',''T'');\n');
         fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [0,1,0], ''objects'',''T'');\n');
         fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [0,0,1], ''places'',''T'');\n');
 end
 
-
+%-----------------------------------------------------------------------------------------------------------------------------------
 %placeholder for subject specification
+%-----------------------------------------------------------------------------------------------------------------------------------
 function processBIDS(fid) 
       fprintf(fid,'aap = aas_processBIDS(aap, [], [], {''sub-01'', ''sub-02'', ''sub-03'', ''sub-04'', ''sub-05''});');
 end
 
+%-----------------------------------------------------------------------------------------------------------------------------------
 %FSL directory specification workaround
+%-----------------------------------------------------------------------------------------------------------------------------------
 function FSLhack(fid)
 
    
@@ -236,8 +242,9 @@ function FSLhack(fid)
         fprintf(fid,'end\n\n\n');
 
 end
-
+%-----------------------------------------------------------------------------------------------------------------------------------
 %input parameters for specific datasets
+%-----------------------------------------------------------------------------------------------------------------------------------
 function inputParams(fid,dataset_name)
         switch(dataset_name)
             case('ds001497')
