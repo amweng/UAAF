@@ -70,6 +70,9 @@ function generate_tasklist(fid, tree)
             case 'aamod_smooth'
                    fprintf(fid,'\t<module><name>%s</name>\n', module_name);
                    smooth_FWHM(fid,tree);
+            case 'aamod_norm_write'
+                   fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
+                   norm_write_warning(fid,tree);
             otherwise
                    fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
         end
@@ -103,42 +106,40 @@ function task_units(fid,tree)
                 sampling_interval = num2str(getfield(tree.tasklist.settings, 'segment_samp'));
         end
       end
-      disp('segment_samp_value is: ');
-      disp(class(sampling_interval));
-
 
      fprintf(fid,'\t\t<extraparameters>\n');
      fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
      fprintf(fid,'\t\t\t\t<samp>%s</samp>\n',sampling_interval);
      fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
      fprintf(fid,'\t\t</extraparameters>\n');
-     fprintf(fid,'</module>\n');
+     fprintf(fid,'\t</module>\n\n\n');
+end
+
+function norm_write_warning(fid,tree)
+    fprintf(fid,'\n\n\t<!-- you may need to change domain=''*'' to domain=''session'' in aamod_norm_write.xml! -->\n\n');
 end
 
 
 function smooth_FWHM(fid,tree)
           tasklist_fieldnames = fieldnames(tree.tasklist.settings);
-      sampling_interval = 0;
+      smooth_kernel = 0;
     
       for index = 1:numel(tasklist_fieldnames)
         
         
         thisfieldname = tasklist_fieldnames{index};
         switch(thisfieldname)
-            case 'segment_samp'
-                sampling_interval = num2str(getfield(tree.tasklist.settings, 'segment_samp'));
+            case 'smooth_FWHM'
+                smooth_kernel = num2str(getfield(tree.tasklist.settings, 'smooth_FWHM'));
         end
       end
-      disp('segment_samp_value is: ');
-      disp(class(sampling_interval));
-
-
+ 
      fprintf(fid,'\t\t<extraparameters>\n');
      fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
-     fprintf(fid,'\t\t\t\t<samp>%s</samp>\n',sampling_interval);
+     fprintf(fid,'\t\t\t\t<FWHM>%s</FWHM>\n',smooth_kernel);
      fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
      fprintf(fid,'\t\t</extraparameters>\n');
-     fprintf(fid,'</module>\n');
+     fprintf(fid,'\t</module>\n\n\n');
 end
 
 

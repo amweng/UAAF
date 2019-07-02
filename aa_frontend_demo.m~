@@ -65,20 +65,17 @@ function generate_tasklist(fid, tree)
         module_name = tree.tasklist.main.module(index).name;
         switch(module_name)
             case 'aamod_segment8_multichan'
-                   fprintf(fid,'\t<module><name>%s</name>\n', 'task_units');
-                   apply_task_options(fid,tree,module_name);
-            case 'segment_samp'
-                   fprintf(fid,'\t<module><name>%s</name>\n', 'segment_samp');
-                   apply_task_options(fid,tree,module_name);
-            case 'smooth_FWHM'
-                   fprintf(fid,'\t<module><name>%s</name>\n', 'smooth_FWHM');
-                   apply_task_options(fid,tree,module_name);
+                   fprintf(fid,'\t<module><name>%s</name>\n', module_name);
+                   task_units(fid,tree);
+            case 'aamod_smooth'
+                   fprintf(fid,'\t<module><name>%s</name>\n', module_name);
+                   smooth_FWHM(fid,tree);
             otherwise
                    fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
         end
     end
     
-    x
+    
     fprintf(fid,'%s\n\n','</main>');
 
     fprintf(fid,'%s\n','</tasklist>');
@@ -91,36 +88,58 @@ end
 % check for and handle preprocessing options
 %-----------------------------------------------------------------------------------------------------------------------------------
 
-function smooth_options(fid,tree)
-end
 
-function 
+function task_units(fid,tree)
 
-
-function apply_task_options(fid,tree,option_name)
-     tasklist_fieldnames = fieldnames(tree.tasklist.settings);
+      tasklist_fieldnames = fieldnames(tree.tasklist.settings);
+      sampling_interval = 0;
     
-    for index = 1:numel(tasklist_fieldnames)
+      for index = 1:numel(tasklist_fieldnames)
+        
         
         thisfieldname = tasklist_fieldnames{index};
-       % if(thisfieldname == module_name)
-            
-                if strcmp(thisfieldname,option_name)
-                    
-                    switch(option_name)
-                        case 'task_units'
-                               fprintf(fid,'\t<module><name>TEST%s</name></module>\n',thisfieldname);
-                        case 'segment_samp'
-                                fprintf(fid,'\t<module><name>TEST%s</name></module>\n',thisfieldname);
-                        case 'smooth_FWHM'
-                                fprintf(fid,'\t<module><name>TEST%s</name></module>\n',thisfieldname);
-                            
-                    end
-                    
-                end
-    
-    end
+        switch(thisfieldname)
+            case 'segment_samp'
+                sampling_interval = num2str(getfield(tree.tasklist.settings, 'segment_samp'));
+        end
+      end
+
+     fprintf(fid,'\t\t<extraparameters>\n');
+     fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
+     fprintf(fid,'\t\t\t\t<samp>%s</samp>\n',sampling_interval);
+     fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
+     fprintf(fid,'\t\t</extraparameters>\n');
+     fprintf(fid,'\t</module>\n');
 end
+
+function norm_write_warning
+    fprintf(fid,'\t
+end
+
+
+function smooth_FWHM(fid,tree)
+          tasklist_fieldnames = fieldnames(tree.tasklist.settings);
+      smooth_kernel = 0;
+    
+      for index = 1:numel(tasklist_fieldnames)
+        
+        
+        thisfieldname = tasklist_fieldnames{index};
+        switch(thisfieldname)
+            case 'smooth_FWHM'
+                smooth_kernel = num2str(getfield(tree.tasklist.settings, 'smooth_FWHM'));
+        end
+      end
+ 
+     fprintf(fid,'\t\t<extraparameters>\n');
+     fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
+     fprintf(fid,'\t\t\t\t<FWHM>%s</FWHM>\n',smooth_kernel);
+     fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
+     fprintf(fid,'\t\t</extraparameters>\n');
+     fprintf(fid,'\t</module>\n');
+end
+
+
 
 
 
@@ -186,8 +205,8 @@ end
 
 function cleanup_and_exit(ierr)
 
-% 	system('rm -f aa_temp_demo.m');
-% 	system('rm -f aa_temp_demo.xml');
+ 	%system('rm -f aa_temp_demo.m');
+ 	%system('rm -f aa_temp_demo.xml');
     if (ierr); disp(aap, true, sprintf('\n%s: Script generation failed (ierr = %d).\n', mfilename, ierr)); end
 	
 end
