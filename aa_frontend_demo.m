@@ -20,12 +20,9 @@ generate_tasklist(fid,tree);
 fclose(fid);
 
 % if (do_preflight); preflight_scripts; end
-
 %
 % run "aa_temp" here...
-%
 % aa_temp
-
 % delete aa_temp.m and aa_temp.xml on exit
 
 cleanup_and_exit(0);
@@ -78,7 +75,6 @@ function generate_tasklist(fid, tree)
     
     
     fprintf(fid,'%s\n\n','</main>');
-
     fprintf(fid,'%s\n','</tasklist>');
     fprintf(fid,'%s\n','</aap>');
     
@@ -96,9 +92,8 @@ function task_units(fid,tree)
       sampling_interval = 0;
     
       for index = 1:numel(tasklist_fieldnames)
-        
-        
         thisfieldname = tasklist_fieldnames{index};
+        
         switch(thisfieldname)
             case 'segment_samp'
                 sampling_interval = num2str(getfield(tree.tasklist.settings, 'segment_samp'));
@@ -190,37 +185,17 @@ function generate_userscript(fid, tree)
                 inputParams(fid,identify_dataset);
                 
             case 'task_units'
-                task_units = getfield(tree.tasklist.settings, 'task_units');
-            
-           
+                task_units = getfield(tree.tasklist.settings, 'task_units');      
         end
-    
     end
     
     
     % TODO, subject selection
     processBIDS(fid);
-    
     fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
    
     %modeling
-    for index = 1:numel(tree.tasklist.main.module)
-        module_name = tree.tasklist.main.module(index).name;
-        switch(module_name)
-            case 'aamod_segment8_multichan'
-                   fprintf(fid,'\t<module><name>%s</name>\n', module_name);
-                   task_units(fid,tree);
-            case 'aamod_smooth'
-                   fprintf(fid,'\t<module><name>%s</name>\n', module_name);
-                   smooth_FWHM(fid,tree);
-            case 'aamod_norm_write'
-                   fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
-                   norm_write_warning(fid,tree);
-            otherwise
-                   fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
-        end
-    end
-    
+    defineContrasts(fid);
     
     fprintf(fid,'\n%s\n','aa_doprocessing(aap);');
 %     if (do_report); fprintf(fid,'%s\n','aa_report(fullfile(aas_getstudypath(aap),aap.directory_conventions.analysisid));'); end
@@ -230,25 +205,26 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
 % -------------------------------------------------------------------
 % Function toolbox
 % -------------------------------------------------------------------
 
-function processBIDS(fid) 
-      fprintf(fid,'aap = aas_processBIDS(aap, [], [], {''sub-01'', ''sub-02'', ''sub-03'', ''sub-04'', ''sub-05'') ''sub-06'', ''sub-07'', ''sub-08'', ''sub-09''});');
+%placeholder while i figure out .txt(or other) specification for contrasts
+%and modeling
+function defineContrasts(fid)
+
+        fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [1,0,0], ''faces'',''T'');\n');
+        fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [0,1,0], ''objects'',''T'');\n');
+        fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [0,0,1], ''places'',''T'');\n');
 end
 
 
+%placeholder for subject specification
+function processBIDS(fid) 
+      fprintf(fid,'aap = aas_processBIDS(aap, [], [], {''sub-01'', ''sub-02'', ''sub-03'', ''sub-04'', ''sub-05'', ''sub-06'', ''sub-07'', ''sub-08'', ''sub-09''});');
+end
+
+%FSL directory specification workaround
 function FSLhack(fid)
 
    
@@ -261,6 +237,7 @@ function FSLhack(fid)
 
 end
 
+%input parameters for specific datasets
 function inputParams(fid,dataset_name)
         switch(dataset_name)
             case('ds001497')

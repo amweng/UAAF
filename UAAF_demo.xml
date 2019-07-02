@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <aap>
-    <tasklist>
-				
-         <settings>
-             
+    <tasklist>	
+        
+         <settings>  
              <!--Read and Write paths-->
             <default_parameters>/Users/andrewweng/Repositories/automaticanalysis_andrew/aa_parametersets/aap_parameters_ANDREW.xml</default_parameters>       <!-- US -->
             <root>/Users/andrewweng/Data/ds001497</root>                                      <!-- US -->        
@@ -26,20 +25,16 @@
             
             <!-- logging options -->
             <generate_report>true</generate_report>
-            <analysis_logging>true</analysis_logging>
-            
+            <analysis_logging>true</analysis_logging> 
             <preflight>true</preflight>
-            
-
         </settings>   
-        <!--- __________________________________________________________________________________________ -->
+
         
         <initialisation>
             <module><name>aamod_study_init</name></module>
         </initialisation>
 		
-        <main>
-                  
+        <main>      
             <module><name>aamod_structuralfromnifti</name></module>
             <module><name>aamod_reorienttomiddle_structural</name></module>
             <module><name>aamod_epifromnifti</name></module>
@@ -52,8 +47,6 @@
             <module><name>aamod_firstlevel_model</name></module>
             <module><name>aamod_firstlevel_contrasts</name></module> 
             <module><name>aamod_firstlevel_threshold</name></module>
-        
-
      	</main>
 		
    </tasklist>
