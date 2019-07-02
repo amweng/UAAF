@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<aap>
+    <tasklist>
+				
+         <settings>
+             
+             <!--Read and Write paths-->
+            <default_parameters>/Users/peellelab/aa_parameters.xml</default_parameters>
+            <root>/Users/peellelab/DATA/NAMWords</root>
+            <data_directory>/Users/peellelab/DATA/NAMWords/SUBJECTS</data_directory>
+            <model_file>/Users/peellelab/DATA/NAMWords/model.csv</model_file>
+            <contrast_file>/Users/peellelab/DATA/NAMWords/contrasts.csv</contrast_file>
+            
+            
+            <!--Options-->
+            <numdummies>4</numdummies>
+            <autoidentifystructural>true</autoidentifystructural>
+          
+            <generate_report>true</generate_report>
+            <analysis_logging>true</analysis_logging>
+            <preflight>true</preflight>
+
+        </settings>
+
+        <initialisation>
+            <module><name>aamod_study_init</name></module>
+
+        </initialisation>
+		
+        <main>
+            
+     
+		<module><name>aamod_autoidentifyseries_timtrio</name></module> 		
+		<module><name>aamod_get_dicom_structural</name></module>
+		<module><name>aamod_convert_structural</name></module>
+		<module><name>aamod_biascorrect_structural</name></module>
+		<module><name>aamod_freesurfer_deface</name></module>
+       
+       
+
+     	</main>
+		
+   </tasklist>
+</aap>

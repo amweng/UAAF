@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<aap>
+    <tasklist>
+				
+         <settings>
+             
+             <!--Read and Write paths-->
+            <default_parameters>/Users/peellelab/aa_parameters.xml</default_parameters>       <!-- US -->
+            <root>/Users/andrewweng/Data/ds001497</root>                                      <!-- US -->        
+            <data_directory>/Users/andrewweng/Data/ds001497</data_directory>                  <!-- US -->
+            <result_folder_name>RESULTS</result_folder_name>                                  <!-- US -->
+            <model_file>/Users/andrewweng/Data/ds001497/model.csv</model_file>                <!-- NEED TO CREATE -->                   
+            <contrast_file>/Users/andrewweng/Data/ds001497/contrasts.csv</contrast_file>      <!--                -->
+            <numdummies>0</numdummies>
+            <autoidentifystructural>true</autoidentifystructural>
+            <task_units>secs</task_units>        <!-- TODO -->
+            <segment_samp>2</segment_samp>       <!-- TODO -->
+            <smooth_FWHM>8</smooth_FWHM>         <!-- TODO -->
+            <select_subjects></select_subjects>  <!-- TODO -->   
+            <generate_report>true</generate_report>
+            <analysis_logging>true</analysis_logging>
+            <preflight>true</preflight>
+            
+
+        </settings>   
+        <!--- __________________________________________________________________________________________ -->
+        
+        <initialisation>
+            <module><name>aamod_study_init</name></module>
+        </initialisation>
+		
+        <main>
+                  
+            <module><name>aamod_structuralfromnifti</name></module>
+            <module><name>aamod_reorienttomiddle_structural</name></module>
+            <module><name>aamod_epifromnifti</name></module>
+            <module><name>aamod_reorienttomiddle_epi</name></module>
+            <module><name>aamod_realign</name></module>  
+            <module><name>aamod_coreg_extended</name></module>
+            <module><name>aamod_segment8_multichan</name></module>      <!-- OPTIONS AVAILABLE -->
+            <module><name>aamod_norm_write</name></module>
+            <module><name>aamod_smooth</name></module>                  <!-- OPTIONS AVAILABLE -->
+
+     	</main>
+		
+   </tasklist>
+</aap>
