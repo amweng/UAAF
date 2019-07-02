@@ -45,7 +45,7 @@ function generate_tasklist(fid, tree)
     % initialization block
     
     fprintf(fid,'\n%s\n','<initialisation>');
-    
+  
 	 for index = 1:numel(tree.tasklist.initialisation.module)
         module_name = tree.tasklist.initialisation.module(index).name;
        fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
@@ -54,8 +54,6 @@ function generate_tasklist(fid, tree)
     fprintf(fid,'%s\n','</initialisation>');
 
     % tasklist block
-    
-    
     % FINISH ME -- text sub <extraparameters><aap><tasklist><currenttask><settings> for <option>
     
     
@@ -160,52 +158,96 @@ function generate_userscript(fid, tree)
     fprintf(fid,'\n\n');
     FSLhack(fid);
     
-    
-   
+    % task_units default to 'scans'
+    task_units = 'scans';
     tasklist_fieldnames = fieldnames(tree.tasklist.settings);
     
     for index = 1:numel(tasklist_fieldnames)
-        
         thisfieldname = tasklist_fieldnames{index};
        
     
         switch (thisfieldname)
 
             case 'default_parameters'
-
                 parameters_fname = getfield(tree.tasklist.settings, 'default_parameters');
-                tasklist_fname = 'aa_temp.m';
+                tasklist_fname = 'aa_temp_demo.m';
                 fprintf(fid,'aap = aarecipe(''%s'',''%s'');\n', parameters_fname, tasklist_fname);
 
             case 'root'
-
                 root_directory = getfield(tree.tasklist.settings, 'root');
                 fprintf(fid,'aap.acq_details.root = ''%s'';\n', root_directory);
-
+            
+            case 'result_directory'
+                result_directory = getfield(tree.tasklist.settings, 'result_directory');
+                fprintf(fid,'aap.directory_conventions.analysisid = ''%s'';\n', result_directory);
+                      
             case 'data_directory'
-
                 data_directory = getfield(tree.tasklist.settings, 'data_directory');
-                fprintf(fid,'aap.directory_conventions.rawdatadir = ''%s'';\n', data_directory);
-
-            case 'numdummies'
-
-                numdummies = getfield(tree.tasklist.settings, 'numdummies');
-                fprintf(fid,'aap.acq_details.numdummies = %d;\n', numdummies);
-
-            case 'autoidentifystructural'
-
-                autoidentifystructural = getfield(tree.tasklist.settings, 'autoidentifystructural');
-                fprintf(fid,'aap.options.autoidentifystructural = %d;\n',strcmp(autoidentifystructural,'true'));
-
+                fprintf(fid,'aap.directory_conventions.rawdatadir = ''%s'';\n', data_directory);  
+            
+            case 'identify_options'
+                identify_dataset = getfield(tree.tasklist.settings, 'identify_options');
+                inputParams(fid,identify_dataset);
+                
+            case 'task_units'
+                task_units = getfield(tree.tasklist.settings, 'task_units');
+            
+           
         end
     
     end
+    
+    
+    % TODO, subject selection
+    processBIDS(fid);
+    
+    fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
+   
+    %modeling
+    for index = 1:numel(tree.tasklist.main.module)
+        module_name = tree.tasklist.main.module(index).name;
+        switch(module_name)
+            case 'aamod_segment8_multichan'
+                   fprintf(fid,'\t<module><name>%s</name>\n', module_name);
+                   task_units(fid,tree);
+            case 'aamod_smooth'
+                   fprintf(fid,'\t<module><name>%s</name>\n', module_name);
+                   smooth_FWHM(fid,tree);
+            case 'aamod_norm_write'
+                   fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
+                   norm_write_warning(fid,tree);
+            otherwise
+                   fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
+        end
+    end
+    
     
     fprintf(fid,'\n%s\n','aa_doprocessing(aap);');
 %     if (do_report); fprintf(fid,'%s\n','aa_report(fullfile(aas_getstudypath(aap),aap.directory_conventions.analysisid));'); end
     fprintf(fid,'%s\n','aa_close(aap);');
     
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+% -------------------------------------------------------------------
+% Function toolbox
+% -------------------------------------------------------------------
+
+function processBIDS(fid) 
+      fprintf(fid,'aap = aas_processBIDS(aap, [], [], {''sub-01'', ''sub-02'', ''sub-03'', ''sub-04'', ''sub-05'') ''sub-06'', ''sub-07'', ''sub-08'', ''sub-09''});');
+end
+
 
 function FSLhack(fid)
 
@@ -214,9 +256,21 @@ function FSLhack(fid)
         fprintf(fid,'currentPath = getenv(''PATH'');\n');
         fprintf(fid,'if ~contains(currentPath,FSL_binaryDirectory)\n');
         fprintf(fid,'\tcorrectedPath = [ currentPath '':'' FSL_binaryDirectory ];\n');
-        fprintf(fid,'\tsetenv = (''PATH'', correctedPath);\n');
+        fprintf(fid,'\tsetenv(''PATH'', correctedPath);\n');
         fprintf(fid,'end\n\n\n');
 
+end
+
+function inputParams(fid,dataset_name)
+        switch(dataset_name)
+            case('ds001497')
+                fprintf(fid,'\n\naap.options.autoidentifystructural_choosefirst = 1;\n');
+                fprintf(fid,'aap.options.autoidentifystructural_chooselast = 0;\n\n');
+                fprintf(fid,'aap.options.NIFTI4D = 1;\n');
+                fprintf(fid,'aap.acq_details.numdummies = 0;\n');
+                fprintf(fid,'aap.acq_details.intput.correctEVfordummies = 0;\n\n');
+                
+        end
 end
 
 

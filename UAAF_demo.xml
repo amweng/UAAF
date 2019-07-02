@@ -5,18 +5,20 @@
          <settings>
              
              <!--Read and Write paths-->
-            <default_parameters>/Users/peellelab/aa_parameters.xml</default_parameters>       <!-- US -->
+            <default_parameters>/Users/andrewweng/Repositories/automaticanalysis_andrew/aa_parametersets/aap_parameters_ANDREW.xml</default_parameters>       <!-- US -->
             <root>/Users/andrewweng/Data/ds001497</root>                                      <!-- US -->        
             <data_directory>/Users/andrewweng/Data/ds001497</data_directory>                  <!-- US -->
-            <result_folder_name>RESULTS</result_folder_name>                                  <!-- US -->
+            <result_directory>RESULTS</result_directory>                                  <!-- US -->
             
             <!--modeling and contrasts)-->
+           
             <model_file>/Users/andrewweng/Data/ds001497/model.csv</model_file>                <!-- NEED TO CREATE -->                   
             <contrast_file>/Users/andrewweng/Data/ds001497/contrasts.csv</contrast_file>      <!--                -->
             
             <!-- extra settings -->
             <numdummies>0</numdummies>
             <autoidentifystructural>true</autoidentifystructural>
+            <identify_options>ds001497</identify_options>
             <task_units>secs</task_units>        <!-- TODO -->
             <segment_samp>2</segment_samp>       <!-- TODO -->
             <smooth_FWHM>8</smooth_FWHM>         <!-- TODO -->
@@ -47,7 +49,6 @@
             <module><name>aamod_segment8_multichan</name></module>      <!-- OPTIONS AVAILABLE -->
             <module><name>aamod_norm_write</name></module>              <!-- generate warning -->
             <module><name>aamod_smooth</name></module>                 <!-- OPTIONS AVAILABLE -->
-           
             <module><name>aamod_firstlevel_model</name></module>
             <module><name>aamod_firstlevel_contrasts</name></module> 
             <module><name>aamod_firstlevel_threshold</name></module>
