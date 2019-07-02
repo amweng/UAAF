@@ -165,7 +165,7 @@ function generate_userscript(fid, tree)
 
             case 'default_parameters'
                 parameters_fname = getfield(tree.tasklist.settings, 'default_parameters');
-                tasklist_fname = 'aa_temp_demo.m';
+                tasklist_fname = 'aa_temp_demo.xml';
                 fprintf(fid,'aap = aarecipe(''%s'',''%s'');\n', parameters_fname, tasklist_fname);
 
             case 'root'
