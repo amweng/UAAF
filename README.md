@@ -1,10 +1,5 @@
 # UAAF
 
-Michael Jones
-Andrew Weng
+tested on ds0001497
 
-Peelle Lab
-
-
-
-Working prototype of one-file aa (automatic_analysis) interface
+early prototype of unified file format aa support
