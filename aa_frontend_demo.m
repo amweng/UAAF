@@ -61,7 +61,7 @@ function generate_tasklist(fid, tree)
         switch(module_name)
             case 'aamod_segment8_multichan'
                    fprintf(fid,'\t<module><name>%s</name>\n', module_name);
-                   task_units(fid,tree);
+                   sampling_interval(fid,tree);
             case 'aamod_smooth'
                    fprintf(fid,'\t<module><name>%s</name>\n', module_name);
                    smooth_FWHM(fid,tree);
@@ -153,10 +153,9 @@ end
 % function to specify task units if different than default
 %-----------------------------------------------------------------------------------------------------------------------------------
 
-function task_units(fid,tree)
+function sampling_interval(fid,tree)
 
-       % task_units default to 'scans'
-         task_units = 'scans';
+
 
       tasklist_fieldnames = fieldnames(tree.tasklist.settings);
       sampling_interval = 0;
