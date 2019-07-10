@@ -130,7 +130,7 @@ function generate_userscript(fid, tree)
     end
     
     
-    % TODO, subject selection
+    %TASK UNITS
     processBIDS(fid);
     fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
    
@@ -213,16 +213,15 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 function defineContrasts(fid)
 
-        fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [1,0,0], ''faces'',''T'');\n');
-        fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [0,1,0], ''objects'',''T'');\n');
-        fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [0,0,1], ''places'',''T'');\n');
+        fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [1], ''test-contrast'',''T'');\n');
+
 end
 
 %-----------------------------------------------------------------------------------------------------------------------------------
 %placeholder for subject specification
 %-----------------------------------------------------------------------------------------------------------------------------------
 function processBIDS(fid) 
-      fprintf(fid,'aap = aas_processBIDS(aap, [], [], {''sub-01'', ''sub-02'', ''sub-03'', ''sub-04'', ''sub-05''});');
+      fprintf(fid,'aap = aas_processBIDS(aap);');
 end
 
 %-----------------------------------------------------------------------------------------------------------------------------------
@@ -248,7 +247,13 @@ function inputParams(fid,dataset_name)
                 fprintf(fid,'aap.options.autoidentifystructural_chooselast = 0;\n\n');
                 fprintf(fid,'aap.options.NIFTI4D = 1;\n');
                 fprintf(fid,'aap.acq_details.numdummies = 0;\n');
-                fprintf(fid,'aap.acq_details.intput.correctEVfordummies = 0;\n\n');         
+                fprintf(fid,'aap.acq_details.intput.correctEVfordummies = 0;\n\n');  
+            case('MoAEpilot')
+                fprintf(fid,'\n\naap.options.autoidentifystructural_choosefirst = 1;\n');
+                fprintf(fid,'aap.options.autoidentifystructural_chooselast = 0;\n\n');
+                fprintf(fid,'aap.options.NIFTI4D = 1;\n');
+                fprintf(fid,'aap.acq_details.numdummies = 0;\n');
+                fprintf(fid,'aap.acq_details.intput.correctEVfordummies = 0;\n\n');   
         end
 end
 
