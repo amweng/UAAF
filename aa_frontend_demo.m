@@ -224,36 +224,27 @@ function defineContrasts(fid)
 end
 
 %-----------------------------------------------------------------------------------------------------------------------------------
-%placeholder for subject specification
+%subject specification
 %-----------------------------------------------------------------------------------------------------------------------------------
 function processBIDS(fid) 
       subjectList = specifySubjects();
       if size(subjectList) == 0
             disp('no subjects specified: processBIDS takes in all available subjects by default');
             fprintf(fid,'aap = aas_processBIDS(aap);');
-      elseif size(subjectList) > 0
-          
-         
-            s = '';
-            
+      elseif size(subjectList) > 0          
+            s = '';           
             for idx = 1:numel(subjectList)
                 A = string({subjectList(idx)});
-                s = strcat(s,'''',A,'''',',');
-      
-            end
-   
-                
+                s = strcat(s,'''',A,'''',',');   
+            end           
              fprintf(fid,'aap = aas_processBIDS(aap,[],[],{%s});',s);
       end
 end
 
 
-
 %-----------------------------------------------------------------------------------------------------------------------------------
 %returns an array of subjects (str) ... ['sub-01'],['sub-02']
 %-----------------------------------------------------------------------------------------------------------------------------------
-
-
 
 
 function [subjects] = specifySubjects()
