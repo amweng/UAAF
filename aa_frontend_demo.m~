@@ -35,6 +35,7 @@ end
 
 function generate_tasklist(fid, tree)
    
+    disp(specifySubjects());
 	
     fprintf(fid,'%s\n','<?xml version="1.0" encoding="utf-8"?>');
     fprintf(fid,'%s\n','<aap>');
@@ -233,18 +234,28 @@ function processBIDS(fid)
             fprintf(fid,'aap = aas_processBIDS(aap);');
       elseif size(subjectList) > 0
           
-         
-            s = '';
+            disp(class(subjectList))
+            disp(size(subjectList))
+            
+            s = {};
             
             for idx = 1:numel(subjectList)
-                A = string({subjectList(idx)});
-                s = strcat(s,'''',A,'''',',');
-      
+                j = "'" + subjectList{idx} + "',";
+                s = [s,j];
+                d
             end
-   
+            disp(s)
                 
+          
+          
+          
+          
+          
+          
+          
              fprintf(fid,'aap = aas_processBIDS(aap,[],[],{%s});',s);
       end
+      fprintf(fid,'aap = aas_processBIDS(aap);');
 end
 
 
