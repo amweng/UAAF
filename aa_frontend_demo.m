@@ -141,6 +141,8 @@ function generate_userscript(fid, tree)
     fprintf(fid,'\n%s\n','aa_doprocessing(aap);');
 %     if (do_report); fprintf(fid,'%s\n','aa_report(fullfile(aas_getstudypath(aap),aap.directory_conventions.analysisid));'); end
     fprintf(fid,'%s\n','aa_close(aap);');
+    jpeg_crawler(fid);
+    
     
 end
 
@@ -225,6 +227,14 @@ end
 function defineContrasts(fid)
 
         fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [1], ''test-contrast'',''T'');\n');
+
+end
+
+%-----------------------------------------------------------------------------------------------------------------------------------
+%call aa_jpeg_cralwer
+%-----------------------------------------------------------------------------------------------------------------------------------
+function jpeg_crawler(fid)
+        fprintf(fid, 'aa_jpeg_crawler(aap);');
 
 end
 

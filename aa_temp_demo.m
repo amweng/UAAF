@@ -32,3 +32,4 @@ aap = aas_addcontrast(aap, 'aamod_firstlevel_contrasts_*','*','sameforallsession
 
 aa_doprocessing(aap);
 aa_close(aap);
+aa_jpeg_crawler(aap);

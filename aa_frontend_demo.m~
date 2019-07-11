@@ -131,14 +131,9 @@ function generate_userscript(fid, tree)
                 
         end
     end
-    
-    
-    
-    processBIDS(fid);
-    
-    
-    %TASK UNITS
-
+  
+    generate_processBIDS(fid);
+    specify_task_units(fid,task_units);
    
     %modeling
     defineContrasts(fid);
@@ -159,9 +154,9 @@ end
 % function to specify task units if different than default
 %-----------------------------------------------------------------------------------------------------------------------------------
 
-function task_un
-    
-fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
+function specify_task_units(fid,task_units)
+       fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
+end
     
     
 %-----------------------------------------------------------------------------------------------------------------------------------
@@ -234,9 +229,13 @@ function defineContrasts(fid)
 end
 
 %-----------------------------------------------------------------------------------------------------------------------------------
+%function
+%-----------------------------------------------------------------------------------------------------------------------------------
+
+%-----------------------------------------------------------------------------------------------------------------------------------
 %generates processBIDS call ... (calls specifySubjects)
 %-----------------------------------------------------------------------------------------------------------------------------------
-function processBIDS(fid) 
+function generate_processBIDS(fid) 
       subjectList = specifySubjects();
       if size(subjectList) == 0
             disp('no subjects specified: processBIDS takes in all available subjects by default');
