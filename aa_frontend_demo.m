@@ -131,14 +131,9 @@ function generate_userscript(fid, tree)
                 
         end
     end
-    
-    
-    
-    processBIDS(fid);
-    
-    
-    %TASK UNITS
-    fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
+  
+    generate_processBIDS(fid);
+    specify_task_units(fid,task_units);
    
     %modeling
     defineContrasts(fid);
@@ -158,6 +153,16 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 % function to specify task units if different than default
 %-----------------------------------------------------------------------------------------------------------------------------------
+
+function specify_task_units(fid,task_units)
+       fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
+end
+    
+    
+%-----------------------------------------------------------------------------------------------------------------------------------
+% function to specify segmentation sampling interval
+%-----------------------------------------------------------------------------------------------------------------------------------
+
 
 function sampling_interval(fid,tree)
 
@@ -224,9 +229,9 @@ function defineContrasts(fid)
 end
 
 %-----------------------------------------------------------------------------------------------------------------------------------
-%subject specification
+%generates processBIDS call ... (calls specifySubjects)
 %-----------------------------------------------------------------------------------------------------------------------------------
-function processBIDS(fid) 
+function generate_processBIDS(fid) 
       subjectList = specifySubjects();
       if size(subjectList) == 0
             disp('no subjects specified: processBIDS takes in all available subjects by default');
@@ -243,9 +248,8 @@ end
 
 
 %-----------------------------------------------------------------------------------------------------------------------------------
-%returns an array of subjects (str) ... ['sub-01'],['sub-02']
+%returns a cell array of subjects ... ['sub-01'],['sub-02']
 %-----------------------------------------------------------------------------------------------------------------------------------
-
 
 function [subjects] = specifySubjects()
      
@@ -265,8 +269,7 @@ function [subjects] = specifySubjects()
    
 end
 
-        
-
+  
 %-----------------------------------------------------------------------------------------------------------------------------------
 %FSL directory specification workaround
 %-----------------------------------------------------------------------------------------------------------------------------------

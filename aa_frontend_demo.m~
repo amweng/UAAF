@@ -35,7 +35,6 @@ end
 
 function generate_tasklist(fid, tree)
    
-    disp(specifySubjects());
 	
     fprintf(fid,'%s\n','<?xml version="1.0" encoding="utf-8"?>');
     fprintf(fid,'%s\n','<aap>');
@@ -139,7 +138,7 @@ function generate_userscript(fid, tree)
     
     
     %TASK UNITS
-    fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
+
    
     %modeling
     defineContrasts(fid);
@@ -159,6 +158,16 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 % function to specify task units if different than default
 %-----------------------------------------------------------------------------------------------------------------------------------
+
+function task_un
+    
+fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
+    
+    
+%-----------------------------------------------------------------------------------------------------------------------------------
+% function to specify segmentation sampling interval
+%-----------------------------------------------------------------------------------------------------------------------------------
+
 
 function sampling_interval(fid,tree)
 
@@ -225,47 +234,27 @@ function defineContrasts(fid)
 end
 
 %-----------------------------------------------------------------------------------------------------------------------------------
-%placeholder for subject specification
+%generates processBIDS call ... (calls specifySubjects)
 %-----------------------------------------------------------------------------------------------------------------------------------
 function processBIDS(fid) 
       subjectList = specifySubjects();
       if size(subjectList) == 0
             disp('no subjects specified: processBIDS takes in all available subjects by default');
             fprintf(fid,'aap = aas_processBIDS(aap);');
-      elseif size(subjectList) > 0
-          
-            disp(class(subjectList))
-            disp(size(subjectList))
-            
-            s = {};
-            
+      elseif size(subjectList) > 0          
+            s = '';           
             for idx = 1:numel(subjectList)
-                j = "'" + subjectList{idx} + "',";
-                s = [s,j];
-                d
-            end
-            disp(s)
-                
-          
-          
-          
-          
-          
-          
-          
+                A = string({subjectList(idx)});
+                s = strcat(s,'''',A,'''',',');   
+            end           
              fprintf(fid,'aap = aas_processBIDS(aap,[],[],{%s});',s);
       end
-      fprintf(fid,'aap = aas_processBIDS(aap);');
 end
 
 
-
 %-----------------------------------------------------------------------------------------------------------------------------------
-%returns an array of subjects (str) ... ['sub-01'],['sub-02']
+%returns a cell array of subjects ... ['sub-01'],['sub-02']
 %-----------------------------------------------------------------------------------------------------------------------------------
-
-
-
 
 function [subjects] = specifySubjects()
      
@@ -285,8 +274,7 @@ function [subjects] = specifySubjects()
    
 end
 
-        
-
+  
 %-----------------------------------------------------------------------------------------------------------------------------------
 %FSL directory specification workaround
 %-----------------------------------------------------------------------------------------------------------------------------------

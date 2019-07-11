@@ -24,7 +24,7 @@ aap.options.NIFTI4D = 1;
 aap.acq_details.numdummies = 0;
 aap.acq_details.intput.correctEVfordummies = 0;
 
-aap = aas_processBIDS(aap);
+aap = aas_processBIDS(aap,[],[],{'sub-01',});
 
 aap.tasksettings.aamod_firstlevel_model.xBF.UNITS = 'scans';
 
