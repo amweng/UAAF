@@ -79,6 +79,9 @@ function generate_userscript(fid, tree)
     
     tasklist_fieldnames = fieldnames(tree.tasklist.settings);
     
+    
+    renameStream(fid,tree);
+    
     for index = 1:numel(tasklist_fieldnames)
         thisfieldname = tasklist_fieldnames{index};
     
@@ -126,9 +129,10 @@ end
 % Function toolbox --------------------------------------------------
 % -------------------------------------------------------------------
 
-%-----------------------------------------------------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------------------------------------------------
 % function to specify task units if different than default
 %----------------------------------------------------------------------------------------------------------------------------------
+
 function specify_task_units(fid,task_units)
        fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
 end
@@ -136,6 +140,7 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 % function to specify segmentation sampling interval
 %-----------------------------------------------------------------------------------------------------------------------------------
+
 function sampling_interval(fid,tree)
 
       tasklist_fieldnames = fieldnames(tree.tasklist.settings);
@@ -161,6 +166,7 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 % print warning for aamod_norm_write.xml
 %-----------------------------------------------------------------------------------------------------------------------------------
+
 function norm_write_warning(fid,tree)
     fprintf(fid,'\n\n\t<!-- you may need to change domain=''*'' to domain=''session'' in aamod_norm_write.xml! -->\n\n');
 end
@@ -168,13 +174,12 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 % function to specify extra smoothing options
 %-----------------------------------------------------------------------------------------------------------------------------------
+
 function smooth_FWHM(fid,tree)
           tasklist_fieldnames = fieldnames(tree.tasklist.settings);
       smooth_kernel = 0;
     
       for index = 1:numel(tasklist_fieldnames)
-        
-        
         thisfieldname = tasklist_fieldnames{index};
         switch(thisfieldname)
             case 'smooth_FWHM'
@@ -194,6 +199,7 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 %placeholder while i figure out .txt(or other) specification for contrasts and modeling
 %-----------------------------------------------------------------------------------------------------------------------------------
+
 function defineContrasts(fid)
         fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [1], ''test-contrast'',''T'');\n');
 end
@@ -201,6 +207,7 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 %call aa_jpeg_cralwer
 %-----------------------------------------------------------------------------------------------------------------------------------
+
 function jpeg_crawler(fid)
         fprintf(fid, 'aa_jpeg_crawler(aap);');
 end
@@ -208,6 +215,7 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 %generates processBIDS call ... (calls specifySubjects)
 %-----------------------------------------------------------------------------------------------------------------------------------
+
 function generate_processBIDS(fid) 
       subjectList = specifySubjects();
       if size(subjectList) == 0
@@ -278,6 +286,28 @@ function inputParams(fid,dataset_name)
         end
 end
 
+function renameStream(fid,tree)
+
+      for index = 1:numel(tree.tasklist.main.module)
+        process = tree.tasklist.main.module(index);
+        doInputRename = (process.renameinputstream);
+        doOutputRename = (process.renameinputstream);
+        if ~isempty(doInputRename)
+            disp("renaming input for " + process.name);
+
+        end
+         if ~isempty(doOutputRename)
+            disp("renaming output for " + process.name);
+ 
+        end
+        
+        
+      
+           
+    end 
+
+end
+
 %-----------------------------------------------------------------------------------------------------------------------------------
 % cleanup_and_exit 
 %-----------------------------------------------------------------------------------------------------------------------------------
@@ -289,3 +319,5 @@ function cleanup_and_exit(ierr)
     if (ierr); disp(aap, true, sprintf('\n%s: Script generation failed (ierr = %d).\n', mfilename, ierr)); end
 	
 end
+
+

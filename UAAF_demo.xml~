@@ -46,7 +46,7 @@
             <module><name>aamod_smooth</name></module>                 <!-- OPTIONS AVAILABLE -->
             <module><name>aamod_histogram</name>
                 <renameinputstream><foo>structural</foo></renameinputstream>
-            </module>
+            
             <module><name>aamod_firstlevel_model</name></module>
             <module><name>aamod_firstlevel_contrasts</name></module> 
             <module><name>aamod_firstlevel_threshold</name></module>

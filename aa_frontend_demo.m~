@@ -2,11 +2,6 @@ function aa_frontend(xmlfile)
 %
 % generate aa userscript and tasklist from a unified aa analysis file (UAAF)
 %
-% usage: aa_frontend('/Users/peellelab/UAAF.xml');
-%
-%
-%
-
 [tree,~,~] = xml_read('UAAF_demo.xml');
 
 fid = fopen('aa_temp_demo.m','w');
@@ -24,9 +19,7 @@ fclose(fid);
 % run "aa_temp" here...
 % aa_temp
 % delete aa_temp.m and aa_temp.xml on exit
-
 cleanup_and_exit(0);
-
 end
 
 %-----------------------------------------------------------------------------------------------------------------------------------
@@ -35,13 +28,11 @@ end
 
 function generate_tasklist(fid, tree)
    
-	
     fprintf(fid,'%s\n','<?xml version="1.0" encoding="utf-8"?>');
     fprintf(fid,'%s\n','<aap>');
     fprintf(fid,'%s\n','<tasklist>');
     
     % initialization block
-    
     fprintf(fid,'\n%s\n','<initialisation>');
   
 	 for index = 1:numel(tree.tasklist.initialisation.module)
@@ -50,11 +41,6 @@ function generate_tasklist(fid, tree)
      end
 
     fprintf(fid,'%s\n','</initialisation>');
-
-    % tasklist block
-    % FINISH ME -- text sub <extraparameters><aap><tasklist><currenttask><settings> for <option>
-    
-    
     fprintf(fid,'\n%s\n','<main>');
     
     for index = 1:numel(tree.tasklist.main.module)
@@ -72,9 +58,7 @@ function generate_tasklist(fid, tree)
             otherwise
                    fprintf(fid,'\t<module><name>%s</name></module>\n', module_name);
         end
-    end
-    
-    
+    end   
     fprintf(fid,'%s\n\n','</main>');
     fprintf(fid,'%s\n','</tasklist>');
     fprintf(fid,'%s\n','</aap>');
@@ -86,24 +70,22 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 
 function generate_userscript(fid, tree)
-
     fprintf(fid,'%s\n','clear all;');
-  %  fprintf(fid,'%s\n','clear functions;');
-   % fprintf(fid,'%s\n','cd(''~'');');
+   %fprintf(fid,'%s\n','clear functions;');
+   %fprintf(fid,'%s\n','cd(''~'');');
     fprintf(fid,'%s\n\n','aa_ver5;');
-    
     fprintf(fid,'\n\n');
     FSLhack(fid);
     
-
     tasklist_fieldnames = fieldnames(tree.tasklist.settings);
+    
+    
+    renameStream(fid,tree);
     
     for index = 1:numel(tasklist_fieldnames)
         thisfieldname = tasklist_fieldnames{index};
-       
     
         switch (thisfieldname)
-
             case 'default_parameters'
                 parameters_fname = getfield(tree.tasklist.settings, 'default_parameters');
                 tasklist_fname = 'aa_temp_demo.xml';
@@ -126,22 +108,19 @@ function generate_userscript(fid, tree)
                 inputParams(fid,identify_dataset);
                 
             case 'task_units'
-                task_units = getfield(tree.tasklist.settings, 'task_units');  
-        
-                
+                task_units = getfield(tree.tasklist.settings, 'task_units');              
         end
     end
   
     generate_processBIDS(fid);
-    specify_task_units(fid,task_units);
-   
-    %modeling
+    specify_task_units(fid,task_units);   
+   %modeling
     defineContrasts(fid);
-    
     fprintf(fid,'\n%s\n','aa_doprocessing(aap);');
-%     if (do_report); fprintf(fid,'%s\n','aa_report(fullfile(aas_getstudypath(aap),aap.directory_conventions.analysisid));'); end
+   %if (do_report); fprintf(fid,'%s\n','aa_report(fullfile(aas_getstudypath(aap),aap.directory_conventions.analysisid));'); end
     fprintf(fid,'%s\n','aa_close(aap);');
-    
+    jpeg_crawler(fid);
+   
 end
 
 
@@ -150,27 +129,22 @@ end
 % Function toolbox --------------------------------------------------
 % -------------------------------------------------------------------
 
-%-----------------------------------------------------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------------------------------------------------
 % function to specify task units if different than default
-%-----------------------------------------------------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------------------------------------------------
 
 function specify_task_units(fid,task_units)
        fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
 end
-    
-    
+   
 %-----------------------------------------------------------------------------------------------------------------------------------
 % function to specify segmentation sampling interval
 %-----------------------------------------------------------------------------------------------------------------------------------
 
-
 function sampling_interval(fid,tree)
 
-
-
       tasklist_fieldnames = fieldnames(tree.tasklist.settings);
-      sampling_interval = 0;
-    
+      sampling_interval = 0;  
       for index = 1:numel(tasklist_fieldnames)
         thisfieldname = tasklist_fieldnames{index};
         
@@ -188,6 +162,11 @@ function sampling_interval(fid,tree)
      fprintf(fid,'\t</module>\n\n\n');
 end
 
+
+%-----------------------------------------------------------------------------------------------------------------------------------
+% print warning for aamod_norm_write.xml
+%-----------------------------------------------------------------------------------------------------------------------------------
+
 function norm_write_warning(fid,tree)
     fprintf(fid,'\n\n\t<!-- you may need to change domain=''*'' to domain=''session'' in aamod_norm_write.xml! -->\n\n');
 end
@@ -201,8 +180,6 @@ function smooth_FWHM(fid,tree)
       smooth_kernel = 0;
     
       for index = 1:numel(tasklist_fieldnames)
-        
-        
         thisfieldname = tasklist_fieldnames{index};
         switch(thisfieldname)
             case 'smooth_FWHM'
@@ -222,19 +199,23 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 %placeholder while i figure out .txt(or other) specification for contrasts and modeling
 %-----------------------------------------------------------------------------------------------------------------------------------
+
 function defineContrasts(fid)
-
         fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [1], ''test-contrast'',''T'');\n');
-
 end
 
 %-----------------------------------------------------------------------------------------------------------------------------------
-%function
+%call aa_jpeg_cralwer
 %-----------------------------------------------------------------------------------------------------------------------------------
+
+function jpeg_crawler(fid)
+        fprintf(fid, 'aa_jpeg_crawler(aap);');
+end
 
 %-----------------------------------------------------------------------------------------------------------------------------------
 %generates processBIDS call ... (calls specifySubjects)
 %-----------------------------------------------------------------------------------------------------------------------------------
+
 function generate_processBIDS(fid) 
       subjectList = specifySubjects();
       if size(subjectList) == 0
@@ -260,14 +241,12 @@ function [subjects] = specifySubjects()
     [subjectfid,msg] = fopen('subjects.txt','r');
     if subjectfid < 0
         error('Failed to open file "%s" because "%s"', 'subjects.txt', msg);
-    end
-    
+    end  
     subjects = {};
     line = fgetl(subjectfid);
     while ischar(line)
         subjects{end+1} = {line};
-        line = fgetl(subjectfid);
-       
+        line = fgetl(subjectfid);    
     end
     fclose(subjectfid);
    
@@ -307,6 +286,26 @@ function inputParams(fid,dataset_name)
         end
 end
 
+function renameStream(fid,tree)
+
+      for index = 1:numel(tree.tasklist.main.module)
+        checkstruct = tree.tasklist.main.module(index);
+        has(checkstruct.renameinputstream);
+        inputRename = tree.tasklist.main.module(index).renameinputstream;
+        
+        %outputRename = tree.tasklist.main.module(index).renameoutputstream;
+        disp(inputRename)
+        if ~isempty(inputRename)
+            disp("we are renaming");
+        end
+        
+        
+      
+           
+    end 
+
+end
+
 %-----------------------------------------------------------------------------------------------------------------------------------
 % cleanup_and_exit 
 %-----------------------------------------------------------------------------------------------------------------------------------
@@ -318,3 +317,5 @@ function cleanup_and_exit(ierr)
     if (ierr); disp(aap, true, sprintf('\n%s: Script generation failed (ierr = %d).\n', mfilename, ierr)); end
 	
 end
+
+
