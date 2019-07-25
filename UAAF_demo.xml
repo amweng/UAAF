@@ -44,8 +44,12 @@
             <module><name>aamod_segment8_multichan</name></module>      <!-- OPTIONS AVAILABLE -->
             <module><name>aamod_norm_write</name></module>              <!-- generate warning -->
             <module><name>aamod_smooth</name></module>                 <!-- OPTIONS AVAILABLE -->
+            <module><name>aamod_histogram</name></module>
+            <module><name>aamod_histogram</name></module>
+            <module><name>aamod_histogram</name></module>
             <module><name>aamod_histogram</name>
                 <renameinputstream><foo>structural</foo></renameinputstream>
+                 <renameoutputstream><bar>pretty_image</bar></renameoutputstream>
             </module>
             <module><name>aamod_firstlevel_model</name></module>
             <module><name>aamod_firstlevel_contrasts</name></module> 

@@ -24,12 +24,3 @@ aap.options.NIFTI4D = 1;
 aap.acq_details.numdummies = 0;
 aap.acq_details.intput.correctEVfordummies = 0;
 
-aap = aas_processBIDS(aap,[],[],{'sub-01',});
-
-aap.tasksettings.aamod_firstlevel_model.xBF.UNITS = 'scans';
-
-aap = aas_addcontrast(aap, 'aamod_firstlevel_contrasts_*','*','sameforallsessions', [1], 'test-contrast','T');
-
-aa_doprocessing(aap);
-aa_close(aap);
-aa_jpeg_crawler(aap);

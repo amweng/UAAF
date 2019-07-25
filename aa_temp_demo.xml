@@ -37,6 +37,9 @@
 
 
 	<module><name>aamod_histogram</name></module>
+	<module><name>aamod_histogram</name></module>
+	<module><name>aamod_histogram</name></module>
+	<module><name>aamod_histogram</name></module>
 	<module><name>aamod_firstlevel_model</name></module>
 	<module><name>aamod_firstlevel_contrasts</name></module>
 	<module><name>aamod_firstlevel_threshold</name></module>

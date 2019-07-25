@@ -80,7 +80,7 @@ function generate_userscript(fid, tree)
     tasklist_fieldnames = fieldnames(tree.tasklist.settings);
     
     
-    renameStream(fid,tree);
+    
     
     for index = 1:numel(tasklist_fieldnames)
         thisfieldname = tasklist_fieldnames{index};
@@ -111,6 +111,8 @@ function generate_userscript(fid, tree)
                 task_units = getfield(tree.tasklist.settings, 'task_units');              
         end
     end
+    
+    renameStream(fid,tree);
   
     generate_processBIDS(fid);
     specify_task_units(fid,task_units);   
@@ -286,18 +288,48 @@ function inputParams(fid,dataset_name)
         end
 end
 
+
+
+%-----------------------------------------------------------------------------------------------------------------------------------
+% allows stream-renaming. Assumes that user will not invoke a process >9
+% times in a single pipeline.
+%-----------------------------------------------------------------------------------------------------------------------------------
+
 function renameStream(fid,tree)
+
+      allmodules = tree.tasklist.main.module
+      
+      moduleList = {allmodules(:).name};
+      numAppearances = zeros(16);
+      
+      for numUnique = 1:numel(moduleList)
+           currentModule = moduleList(numUnique);
+           disp(currentModule)
+      
+      end
+          
+     
+   
+     
 
       for index = 1:numel(tree.tasklist.main.module)
         process = tree.tasklist.main.module(index);
-        doInputRename = (process.renameinputstream);
-        doOutputRename = (process.renameinputstream);
-        if ~isempty(doInputRename)
-            disp("renaming input for " + process.name);
+        if isfield(process, 'renameinputstream') 
+            if ~isempty(process.renameinputstream)
+                disp("renaming input stream for " + process.name);
+                fields = fieldnames(process.renameinputstream);
+                inputStream = fields{1};
+                fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_9999','" + inputStream + "','" + process.renameinputstream.(inputStream) + "');" + '\n\n');
+            end
 
         end
-         if ~isempty(doOutputRename)
-            disp("renaming output for " + process.name);
+         if isfield(process, 'renameoutputstream')
+             if ~isempty(process.renameoutputstream)             
+                disp("renaming output of " + process.name);
+                fields = fieldnames(process.renameoutputstream);
+                outputStream = fields{1};
+                fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_9999','" + outputStream + "','" + process.renameoutputstream.(outputStream) + "','output');" + '\n\n' );
+             end
  
         end
         
