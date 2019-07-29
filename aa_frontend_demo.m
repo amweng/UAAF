@@ -303,10 +303,7 @@ function renameStream(fid,tree)
       uniqueModules = unique(moduleList);
       lengthX = length(uniqueModules);
       numAppearance(lengthX) = 0;
-      if isempty(uniqueModules)
-          moduleCounter = 0
-      end
-      
+
    
      
      
@@ -327,8 +324,6 @@ function renameStream(fid,tree)
                 
                 disp(numAppearance(currentModuleIndex));
                        
-                
-        
         
                 if isfield(process, 'renameinputstream') 
                     if ~isempty(process.renameinputstream)
@@ -347,12 +342,12 @@ function renameStream(fid,tree)
                         fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_000" + numAppearance(currentModuleIndex) + "','" + outputStream + "','" + process.renameoutputstream.(outputStream) + "','output');" + '\n\n' );
                      end
 
-                end
+                 end
 
         
       
            
-    end 
+        end 
 
 end
 
