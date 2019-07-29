@@ -300,40 +300,54 @@ function renameStream(fid,tree)
       allmodules = tree.tasklist.main.module
       
       moduleList = {allmodules(:).name};
-      numAppearances = zeros(16);
-      
-      for moduleIndex = 1:numel(moduleList)
-           currentModule = moduleList(moduleIndex);
-           for timeSeen
-           disp(currentModule)
-      
+      uniqueModules = unique(moduleList);
+      lengthX = length(uniqueModules);
+      numAppearance(lengthX) = 0;
+      if isempty(uniqueModules)
+          moduleCounter = 0
       end
-          
-     
+      
+   
+      
+      for uniqueIndex = 1:numel(uniqueModules)
+          match = uniqueModules(uniqueIndex);
+          for moduleIndex = 1:numel(moduleList)
+              if strcmp(match,moduleList(moduleIndex))
+                  numAppearance(uniqueIndex) = numAppearance(uniqueIndex) + 1;
+              end
+          end
+      end
+      
    
      
 
       for index = 1:numel(tree.tasklist.main.module)
         process = tree.tasklist.main.module(index);
-        if isfield(process, 'renameinputstream') 
-            if ~isempty(process.renameinputstream)
-                disp("renaming input stream for " + process.name);
-                fields = fieldnames(process.renameinputstream);
-                inputStream = fields{1};
-                fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_9999','" + inputStream + "','" + process.renameinputstream.(inputStream) + "');" + '\n\n');
-            end
-
-        end
-         if isfield(process, 'renameoutputstream')
-             if ~isempty(process.renameoutputstream)             
-                disp("renaming output of " + process.name);
-                fields = fieldnames(process.renameoutputstream);
-                outputStream = fields{1};
-                fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_9999','" + outputStream + "','" + process.renameoutputstream.(outputStream) + "','output');" + '\n\n' );
-             end
- 
-        end
         
+        
+        
+                
+        
+        
+                if isfield(process, 'renameinputstream') 
+                    if ~isempty(process.renameinputstream)
+                        disp("renaming input stream for " + process.name);
+                        fields = fieldnames(process.renameinputstream);
+                        inputStream = fields{1};
+                        fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_9999','" + inputStream + "','" + process.renameinputstream.(inputStream) + "');" + '\n\n');
+                    end
+
+                end
+                 if isfield(process, 'renameoutputstream')
+                     if ~isempty(process.renameoutputstream)             
+                        disp("renaming output of " + process.name);
+                        fields = fieldnames(process.renameoutputstream);
+                        outputStream = fields{1};
+                        fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_9999','" + outputStream + "','" + process.renameoutputstream.(outputStream) + "','output');" + '\n\n' );
+                     end
+
+                end
+
         
       
            
