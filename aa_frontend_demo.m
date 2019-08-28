@@ -164,19 +164,29 @@ end
 %-----------------------------------------------------------------------------------------------------------------------------------
 
 function smooth_FWHM(fid,tree)
+
+      default_FWHM = 10;
+
       tasklist_fieldnames = fieldnames(tree.tasklist.settings);
-      smooth_kernel = 0;
+      user_FWHM = 0;
    
       for index = 1:numel(tasklist_fieldnames)
         thisfieldname = tasklist_fieldnames{index};
         switch(thisfieldname)
             case 'smooth_FWHM'
-                smooth_kernel = num2str(getfield(tree.tasklist.settings, 'smooth_FWHM'));
+                user_FWHM = num2str(getfield(tree.tasklist.settings, 'smooth_FWHM'));
         end
       end 
+      
+     if user_FWHM ~= default_FWHM
+         disp("smoothing FWHM defined as " + user_FWHM + ". SPM default FWHM = " + default_FWHM);
+     end
+     
+     
+      
      fprintf(fid,'\t\t<extraparameters>\n');
      fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
-     fprintf(fid,'\t\t\t\t<FWHM>%s</FWHM>\n',smooth_kernel);
+     fprintf(fid,'\t\t\t\t<FWHM>%s</FWHM>\n',user_FWHM);
      fprintf(fid,'\t\t\t</settings></currenttask></tasklist></aap>\n');
      fprintf(fid,'\t\t</extraparameters>\n');
      fprintf(fid,'\t</module>\n\n\n');
@@ -261,7 +271,7 @@ function inputParams(fid,dataset_name)
 end
 
 %-----------------------------------------------------------------------------------------------------------------------------------
-% allows stream-renaming. Assumes that user will not invoke a process >9
+% allows stream-renaming. (FIXME) Assumes that user will not invoke a process >9
 % times in a single pipeline.
 %-----------------------------------------------------------------------------------------------------------------------------------
 
@@ -309,6 +319,7 @@ end
 % cleanup_and_exit 
 %-----------------------------------------------------------------------------------------------------------------------------------
 function cleanup_and_exit(ierr)
+
 
  	%system('rm -f aa_temp_demo.m');
  	%system('rm -f aa_temp_demo.xml');

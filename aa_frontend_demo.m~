@@ -78,10 +78,7 @@ function generate_userscript(fid, tree)
     FSLhack(fid);
     
     tasklist_fieldnames = fieldnames(tree.tasklist.settings);
-    
-    
-    
-    
+  
     for index = 1:numel(tasklist_fieldnames)
         thisfieldname = tasklist_fieldnames{index};
     
@@ -112,8 +109,7 @@ function generate_userscript(fid, tree)
         end
     end
     
-    renameStream(fid,tree);
-  
+    renameStream(fid,tree); 
     generate_processBIDS(fid);
     specify_task_units(fid,task_units);   
    %modeling
@@ -125,20 +121,16 @@ function generate_userscript(fid, tree)
    
 end
 
-
-
 % -------------------------------------------------------------------
-% Function toolbox --------------------------------------------------
+% Function toolbox                                -------------------
 % -------------------------------------------------------------------
-
 %----------------------------------------------------------------------------------------------------------------------------------
 % function to specify task units if different than default
 %----------------------------------------------------------------------------------------------------------------------------------
 
 function specify_task_units(fid,task_units)
        fprintf(fid,'\n\naap.tasksettings.aamod_firstlevel_model.xBF.UNITS = ''%s'';\n\n', task_units);
-end
-   
+end  
 %-----------------------------------------------------------------------------------------------------------------------------------
 % function to specify segmentation sampling interval
 %-----------------------------------------------------------------------------------------------------------------------------------
@@ -148,14 +140,12 @@ function sampling_interval(fid,tree)
       tasklist_fieldnames = fieldnames(tree.tasklist.settings);
       sampling_interval = 0;  
       for index = 1:numel(tasklist_fieldnames)
-        thisfieldname = tasklist_fieldnames{index};
-        
+        thisfieldname = tasklist_fieldnames{index};      
         switch(thisfieldname)
             case 'segment_samp'
                 sampling_interval = num2str(getfield(tree.tasklist.settings, 'segment_samp'));
         end
       end
-
      fprintf(fid,'\t\t<extraparameters>\n');
      fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
      fprintf(fid,'\t\t\t\t<samp>%s</samp>\n',sampling_interval);
@@ -163,32 +153,30 @@ function sampling_interval(fid,tree)
      fprintf(fid,'\t\t</extraparameters>\n');
      fprintf(fid,'\t</module>\n\n\n');
 end
-
-
 %-----------------------------------------------------------------------------------------------------------------------------------
 % print warning for aamod_norm_write.xml
 %-----------------------------------------------------------------------------------------------------------------------------------
-
 function norm_write_warning(fid,tree)
     fprintf(fid,'\n\n\t<!-- you may need to change domain=''*'' to domain=''session'' in aamod_norm_write.xml! -->\n\n');
 end
-
 %-----------------------------------------------------------------------------------------------------------------------------------
 % function to specify extra smoothing options
 %-----------------------------------------------------------------------------------------------------------------------------------
 
 function smooth_FWHM(fid,tree)
-          tasklist_fieldnames = fieldnames(tree.tasklist.settings);
+      tasklist_fieldnames = fieldnames(tree.tasklist.settings);
       smooth_kernel = 0;
-    
+   
       for index = 1:numel(tasklist_fieldnames)
         thisfieldname = tasklist_fieldnames{index};
         switch(thisfieldname)
             case 'smooth_FWHM'
                 smooth_kernel = num2str(getfield(tree.tasklist.settings, 'smooth_FWHM'));
         end
-      end
- 
+      end 
+      
+     disp("user defined  
+      
      fprintf(fid,'\t\t<extraparameters>\n');
      fprintf(fid,'\t\t\t<aap><tasklist><currenttask><settings>\n');
      fprintf(fid,'\t\t\t\t<FWHM>%s</FWHM>\n',smooth_kernel);
@@ -196,28 +184,21 @@ function smooth_FWHM(fid,tree)
      fprintf(fid,'\t\t</extraparameters>\n');
      fprintf(fid,'\t</module>\n\n\n');
 end
-
-
 %-----------------------------------------------------------------------------------------------------------------------------------
 %placeholder while i figure out .txt(or other) specification for contrasts and modeling
 %-----------------------------------------------------------------------------------------------------------------------------------
-
 function defineContrasts(fid)
         fprintf(fid,'aap = aas_addcontrast(aap, ''aamod_firstlevel_contrasts_*'',''*'',''sameforallsessions'', [1], ''test-contrast'',''T'');\n');
 end
-
 %-----------------------------------------------------------------------------------------------------------------------------------
 %call aa_jpeg_cralwer
 %-----------------------------------------------------------------------------------------------------------------------------------
-
 function jpeg_crawler(fid)
         fprintf(fid, 'aa_jpeg_crawler(aap);');
 end
-
 %-----------------------------------------------------------------------------------------------------------------------------------
 %generates processBIDS call ... (calls specifySubjects)
 %-----------------------------------------------------------------------------------------------------------------------------------
-
 function generate_processBIDS(fid) 
       subjectList = specifySubjects();
       if size(subjectList) == 0
@@ -232,12 +213,9 @@ function generate_processBIDS(fid)
              fprintf(fid,'aap = aas_processBIDS(aap,[],[],{%s});',s);
       end
 end
-
-
 %-----------------------------------------------------------------------------------------------------------------------------------
 %returns a cell array of subjects ... ['sub-01'],['sub-02']
 %-----------------------------------------------------------------------------------------------------------------------------------
-
 function [subjects] = specifySubjects()
      
     [subjectfid,msg] = fopen('subjects.txt','r');
@@ -250,11 +228,8 @@ function [subjects] = specifySubjects()
         subjects{end+1} = {line};
         line = fgetl(subjectfid);    
     end
-    fclose(subjectfid);
-   
+    fclose(subjectfid); 
 end
-
-  
 %-----------------------------------------------------------------------------------------------------------------------------------
 %FSL directory specification workaround
 %-----------------------------------------------------------------------------------------------------------------------------------
@@ -288,83 +263,59 @@ function inputParams(fid,dataset_name)
         end
 end
 
-
-
 %-----------------------------------------------------------------------------------------------------------------------------------
-% allows stream-renaming. Assumes that user will not invoke a process >9
+% allows stream-renaming. (FIXME) Assumes that user will not invoke a process >9
 % times in a single pipeline.
 %-----------------------------------------------------------------------------------------------------------------------------------
 
 function renameStream(fid,tree)
 
-      allmodules = tree.tasklist.main.module
-      
+      allmodules = tree.tasklist.main.module;     
       moduleList = {allmodules(:).name};
       uniqueModules = unique(moduleList);
-      lengthX = length(uniqueModules);
-      numAppearance(lengthX) = 0;
-      if isempty(uniqueModules)
-          moduleCounter = 0
-      end
-      
-   
-      
-      for uniqueIndex = 1:numel(uniqueModules)
-          match = uniqueModules(uniqueIndex);
-          for moduleIndex = 1:numel(moduleList)
-              if strcmp(match,moduleList(moduleIndex))
-                  numAppearance(uniqueIndex) = numAppearance(uniqueIndex) + 1;
-              end
-          end
-      end
-      
-   
-     
+      lengthUnique = length(uniqueModules);
+      numAppearance(lengthUnique) = 0;
 
       for index = 1:numel(tree.tasklist.main.module)
         process = tree.tasklist.main.module(index);
         
-        
-        
+                currentModuleIndex = 9999;      
+                for uniqueIndex = 1:numel(uniqueModules)
+                   match = uniqueModules(uniqueIndex);
+                   if strcmp(match,process.name)
+                       numAppearance(uniqueIndex) = numAppearance(uniqueIndex) + 1;
+                       currentModuleIndex = uniqueIndex;
+                   end
+                end
                 
-        
-        
                 if isfield(process, 'renameinputstream') 
                     if ~isempty(process.renameinputstream)
                         disp("renaming input stream for " + process.name);
                         fields = fieldnames(process.renameinputstream);
                         inputStream = fields{1};
-                        fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_9999','" + inputStream + "','" + process.renameinputstream.(inputStream) + "');" + '\n\n');
+                        fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_000" + numAppearance(currentModuleIndex) + "','" + inputStream + "','" + process.renameinputstream.(inputStream) + "');" + '\n\n');
                     end
 
                 end
-                 if isfield(process, 'renameoutputstream')
+                
+                if isfield(process, 'renameoutputstream')
                      if ~isempty(process.renameoutputstream)             
                         disp("renaming output of " + process.name);
                         fields = fieldnames(process.renameoutputstream);
                         outputStream = fields{1};
-                        fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_9999','" + outputStream + "','" + process.renameoutputstream.(outputStream) + "','output');" + '\n\n' );
+                        fprintf(fid,"aap = aas_renamestream(aap,'" + process.name + "_000" + numAppearance(currentModuleIndex) + "','" + outputStream + "','" + process.renameoutputstream.(outputStream) + "','output');" + '\n\n' );
                      end
-
                 end
-
-        
-      
-           
-    end 
-
+        end 
 end
-
 %-----------------------------------------------------------------------------------------------------------------------------------
 % cleanup_and_exit 
 %-----------------------------------------------------------------------------------------------------------------------------------
-
 function cleanup_and_exit(ierr)
+
 
  	%system('rm -f aa_temp_demo.m');
  	%system('rm -f aa_temp_demo.xml');
     if (ierr); disp(aap, true, sprintf('\n%s: Script generation failed (ierr = %d).\n', mfilename, ierr)); end
 	
 end
-
-
